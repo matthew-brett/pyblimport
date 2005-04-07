@@ -42,7 +42,14 @@ def clear_archives():
 
 
 def mirror_archives(archive_map, archive_dir, source_suffix='-SOURCE'):
-    # http://www.enyo.de/fw/software/arch/get.html#6
+    # This command did not generate valid archives from the ftp source
+    # that I was using.  I had other problems with the ftp source, so
+    # the routine itself my work with other archive sources.
+    #
+    # http://www.enyo.de/fw/software/arch/get.html#6 to allow the
+    # commits that the mirror needs, you will need to set your tla id,
+    # with something like: shcall('tla my-id "Matthew Brett
+    # <matthew.brett@gmail.com>"')
     archive_dir = os.path.abspath(archive_dir)
     new_map = {}
     for code, name_location in archive_map.items():
@@ -116,7 +123,6 @@ tla.archcmd = arch_cmd
 if __name__ == '__main__':
     # don't forget to set an hg or git username
     clear_archives()
-    shcall('tla my-id "Matthew Brett <matthew.brett@gmail.com>"')
     # currently working with local copy of archives
     amap = pyblio_archive_map(archives,
                               '/Users/mb312/data/archives',
