@@ -70,7 +70,7 @@ def read_summary(fullrev):
     date = ""
     summary = []
     skip_line = False
-    log_liness = shrun("%s cat-archive-log %s" % (archcmd, fullrev))
+    log_lines = shrun("%s cat-archive-log %s" % (archcmd, fullrev))
     log_lines = [L for L in log_lines.split('\n') if L]
     for l in log_lines
         if len(summary) == 0:
