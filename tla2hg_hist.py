@@ -92,6 +92,7 @@ def read_summary(fullrev):
             if l and stripped != summary[0]:
                 summary.append(stripped)
     summary.extend(["", "imported from: %s" % fullrev])
+    summary = [s.decode('ascii', 'replace') for s in summary]
     return summary, author, date
 
 
