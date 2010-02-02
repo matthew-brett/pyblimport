@@ -74,7 +74,7 @@ def read_summary(fullrev):
     skip_line = False
     log_lines = shrun("%s cat-archive-log %s" % (archcmd, fullrev))
     log_lines = [L for L in log_lines.split('\n') if L]
-    for l in log_lines
+    for l in log_lines:
         if len(summary) == 0:
             if l.startswith("Creator: "):
                 author = l[9:].strip()
