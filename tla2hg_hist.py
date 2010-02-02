@@ -50,12 +50,14 @@ def shrun(cmd, ret_error=False, ret_code=False):
     return ret
 
 
-def get_revisions(archive):
+def get_revisions(archive, remove=True, from_existing=False):
     """get revision list of archive"""
-    shcall("%s get %s tmp-archive" % (archcmd, archive))
+    if not from_existing:
+        shcall("%s get %s tmp-archive" % (archcmd, archive))
     revlist = shrun("cd tmp-archive && %s ancestry-graph --reverse"
                     % archcmd)
-    os.remove('tmp-archive')
+    if remove=True:
+        os.removedirs('tmp-archive')
     revlist = [r for r in revlist.split('\n') if r]
     version_list = []
     for r in revlist:

@@ -114,12 +114,12 @@ if __name__ == '__main__':
     clear_archives()
     shcall('tla my-id "Matthew Brett <matthew.brett@gmail.com>"')
     #archive_dir = os.path.abspath('archives')
-    amap = pyblio_archive_map(archives,
-                              'ftp://arch.pybliographer.org/archives',
-                              source=False)
     #amap = pyblio_archive_map(archives,
-    #                          '/Users/mb312/dev_trees/pybliographer/mirror',
+    #                          'ftp://arch.pybliographer.org/archives',
     #                          source=False)
+    amap = pyblio_archive_map(archives,
+                              '/home/matthew/dev_trees/pybliographer/archives',
+                              source=False)
     register_archives(amap)
     #mirror_archives(amap, archive_dir)
     #amap = pyblio_archive_map(archives,
