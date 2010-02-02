@@ -128,6 +128,6 @@ if __name__ == '__main__':
     #                          source=False)
     #register_archives(amap, remove=True)
     set_default_archive(amap['2007'][0])
-    #import_projects(projects)
-    revs = tla.get_revisions('pyblio--devel--1.3', False, True)
+    import_projects(projects)
+    #revs = tla.get_revisions('pyblio--devel--1.3'))
     

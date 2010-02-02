@@ -125,7 +125,7 @@ def make_initial_revision(fullrev, mercurial_dir):
 def import_revision(archive, fullrev, mercurial_dir):
     """import a single arch revision into an hg repo"""
     sys.stdout.write(">>> '%s'\n" % fullrev)
-    shcall("cd %s && %s replay %s" % (mercurial_dir, archcmd, fullrev))
+    shcall("%s replay --dir %s %s" % (archcmd, mercurial_dir, fullrev))
     commit_log(fullrev, mercurial_dir)
 
 
