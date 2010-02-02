@@ -130,8 +130,6 @@ def import_revision(archive, fullrev, mercurial_dir):
 
 
 def tla_to_hg(archive, mercurial_dir):
-    if not os.path.exists(mercurial_dir):
-        os.mkdir(mercurial_dir)
     version_list = get_revisions(archive)
     make_initial_revision(version_list[0], mercurial_dir)
     for fullrev in version_list[1:]:
@@ -143,7 +141,7 @@ if __name__ == '__main__':
         cmd, archive, mercurial_dir = sys.argv[:3]
     except IndexError:
         sys.stdout.write("""\
-    Usage: arch-to-hg.py archive target_dir
+    Usage: tla2hg_hist.py archive target_dir
 
     archive: the tla/baz archive you are converting from
     target_dir: where to put conversion results in hg format, must be some

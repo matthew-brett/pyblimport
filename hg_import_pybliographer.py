@@ -106,6 +106,7 @@ def set_default_archive(archive_name):
 
 def import_projects(projects):
     for arch_proj, hg_proj in projects:
+        os.removedirs(hg_proj)
         tla.tla_to_hg(arch_proj, hg_proj)
 
 
