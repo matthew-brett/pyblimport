@@ -56,7 +56,7 @@ def get_revisions(archive, remove=True, from_existing=False):
         shcall("%s get %s tmp-archive" % (archcmd, archive))
     revlist = shrun("cd tmp-archive && %s ancestry-graph --reverse"
                     % archcmd)
-    if remove=True:
+    if remove==True:
         os.removedirs('tmp-archive')
     # because of the ancestry graph, we get full revision ids
     revlist = [r for r in revlist.split('\n') if r]
