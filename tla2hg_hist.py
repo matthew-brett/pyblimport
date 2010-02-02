@@ -21,7 +21,7 @@
 """
 import os, sys, time
 import subprocess
-
+import shutil
 
 # it works with either one:
 archcmd = "tla"
@@ -57,7 +57,7 @@ def get_revisions(archive, remove=True, from_existing=False):
     revlist = shrun("cd tmp-archive && %s ancestry-graph --reverse"
                     % archcmd)
     if remove==True:
-        os.removedirs('tmp-archive')
+        shutil.rmtree('tmp-archive')
     # because of the ancestry graph, we get full revision ids
     revlist = [r for r in revlist.split('\n') if r]
     version_list = []
