@@ -92,21 +92,19 @@ def read_summary(fullrev):
             if l and stripped != summary[0]:
                 summary.append(stripped)
     summary.extend(["", "imported from: %s" % fullrev])
-    summary = [s.decode('ascii', 'replace') for s in summary]
+    summary = [s.decode('ascii', 'ignore') for s in summary]
     return summary, author, date
 
 
 def commit_log(fullrev, mercurial_dir):
     summary, author, date = read_summary(fullrev)
-    try:
-        fd = open('tmp-msg', 'w')
-        fd.write('\n'.join(summary) + '\n')
-        fd.close()
-        shcall("cd %s && hg commit "
-               "--addremove -l ../tmp-msg --date '%s' --user '%s'"
-               % (mercurial_dir, date, author))
-    finally:
-        os.remove('tmp-msg')
+    fd = open('tmp-msg', 'wt')
+    fd.write('\n'.join(summary) + '\n')
+    fd.close()
+    shcall("cd %s && hg commit "
+           "--addremove -l ../tmp-msg --date '%s' --user '%s'"
+           % (mercurial_dir, date, author))
+    os.remove('tmp-msg')
 
 
 def make_initial_revision(fullrev, mercurial_dir):
