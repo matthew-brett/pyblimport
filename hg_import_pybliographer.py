@@ -4,6 +4,8 @@ import os
 from os.path import join as pjoin, abspath, isdir, isfile, dirname
 import sys
 import subprocess
+import shutil
+
 import tla2hg_hist as tla
 reload(tla)
 from tla2hg_hist import  shcall, shrun
@@ -106,7 +108,7 @@ def set_default_archive(archive_name):
 
 def import_projects(projects):
     for arch_proj, hg_proj in projects:
-        os.removedirs(hg_proj)
+        shutil.rmtree(hg_proj)
         tla.tla_to_hg(arch_proj, hg_proj)
 
 
