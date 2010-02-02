@@ -58,11 +58,11 @@ def get_revisions(archive, remove=True, from_existing=False):
                     % archcmd)
     if remove=True:
         os.removedirs('tmp-archive')
+    # because of the ancestry graph, we get full revision ids
     revlist = [r for r in revlist.split('\n') if r]
     version_list = []
     for r in revlist:
-        rev = r.split('\t')[0]
-        fullrev = "%s--%s" % (rev.strip(), archive)
+        fullrev = r.split('\t')[0].strip()
         version_list.append(fullrev)
     return version_list
 
