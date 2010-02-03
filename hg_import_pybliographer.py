@@ -120,6 +120,7 @@ if __name__ == '__main__':
     #amap = pyblio_archive_map(archives,
     #                          'ftp://arch.pybliographer.org/archives',
     #                          source=False)
+    # currently working with fuse mount of ftp
     amap = pyblio_archive_map(archives,
                               '/home/matthew/dev_trees/pybliographer/archives',
                               source=False)

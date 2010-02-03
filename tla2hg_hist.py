@@ -99,7 +99,7 @@ def commit_log(fullrev, mercurial_dir):
     fd = open('tmp-msg', 'wt')
     fd.write('\n'.join(summary) + '\n')
     fd.close()
-    ret = os.system("cd %s && hg commit "
+    ret = shcall("cd %s && hg commit "
                     "--addremove -l ../tmp-msg --date '%s' --user '%s'"
                     % (mercurial_dir, date, author))
     if ret != 0:
@@ -110,14 +110,14 @@ def commit_log(fullrev, mercurial_dir):
 def make_initial_revision(fullrev, mercurial_dir):
     """make initial hg repository"""
     sys.stdout.write(">>> '%s'\n" % fullrev)
-    os.system("%s get %s %s" % (archcmd, fullrev, mercurial_dir))
+    shcall("%s get %s %s" % (archcmd, fullrev, mercurial_dir))
     hgi = open("%s/.hgignore" % mercurial_dir, "w")
     hgi.write("""\
 .arch-ids/.*
 \{arch\}/.*
 """)
     hgi.close()
-    os.system("cd %s && hg init" % mercurial_dir)
+    shcall("cd %s && hg init" % mercurial_dir)
     commit_log(fullrev, mercurial_dir)
 
 
