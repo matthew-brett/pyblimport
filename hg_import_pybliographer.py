@@ -108,7 +108,7 @@ def set_default_archive(archive_name):
 
 def import_projects(projects):
     for arch_proj, hg_proj in projects:
-        shutil.rmtree(hg_proj)
+        shutil.rmtree(hg_proj, ignore_errors=True)
         tla.tla_to_hg(arch_proj, hg_proj)
 
 
