@@ -72,8 +72,6 @@ def read_summary(fullrev):
     date = ""
     summary = []
     skip_line = False
-    log_lines = shrun("%s cat-archive-log %s" % (archcmd, fullrev))
-    log_lines = [L for L in log_lines.split('\n') if L]
     for l in os.popen("%s cat-archive-log %s" % (archcmd, fullrev)):
         if len(summary) == 0:
             if l.startswith("Creator: "):
@@ -101,23 +99,25 @@ def commit_log(fullrev, mercurial_dir):
     fd = open('tmp-msg', 'wt')
     fd.write('\n'.join(summary) + '\n')
     fd.close()
-    shcall("cd %s && hg commit "
-           "--addremove -l ../tmp-msg --date '%s' --user '%s'"
-           % (mercurial_dir, date, author))
+    ret = os.system("cd %s && hg commit "
+                    "--addremove -l ../tmp-msg --date '%s' --user '%s'"
+                    % (mercurial_dir, date, author))
+    if ret != 0:
+        raise RuntimeError('hg commit failed')
     os.remove('tmp-msg')
 
 
 def make_initial_revision(fullrev, mercurial_dir):
     """make initial hg repository"""
     sys.stdout.write(">>> '%s'\n" % fullrev)
-    shcall("%s get %s %s" % (archcmd, fullrev, mercurial_dir))
+    os.system("%s get %s %s" % (archcmd, fullrev, mercurial_dir))
     hgi = open("%s/.hgignore" % mercurial_dir, "w")
     hgi.write("""\
 .arch-ids/.*
 \{arch\}/.*
 """)
     hgi.close()
-    shcall("cd %s && hg init" % mercurial_dir)
+    os.system("cd %s && hg init" % mercurial_dir)
     commit_log(fullrev, mercurial_dir)
 
 
