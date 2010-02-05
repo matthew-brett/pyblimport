@@ -6,50 +6,8 @@ import sys
 import subprocess
 import shutil
 
-import tla2hg_hist as tla
-reload(tla)
-from tla2hg_hist import  shcall, shrun
-
-
-arch_cmd = 'tla'
-archives = ('2007', '2006', '2005', 'public')
-# from tla abrowse ftp://arch.pybliographer.org/archives/2007
-'''
-gobry@pybliographer.org--2007
-  pyblio
-    pyblio--devel
-      pyblio--devel--1.3
-        base-0 .. patch-23
-
-    pyblio--legacy
-      pyblio--legacy--1.3
-        base-0 .. version-0
-
-    pyblio--stable
-      pyblio--stable--1.2
-        base-0 .. patch-30
-
-  pyblio-core
-    pyblio-core--devel
-      pyblio-core--devel--1.3
-        base-0 .. patch-29
-
-  python-bibtex
-    python-bibtex--devel
-      python-bibtex--devel--1.3
-        base-0
-
-    python-bibtex--stable
-      python-bibtex--stable--1.2
-        base-0
-'''
-projects = (
-    ('pyblio--stable--1.2', 'pyblio-1.2'),
-    ('python-bibtex--stable--1.2', 'python-bibtex-1.2'),
-    )
-
-# Set our own archive command to module global
-tla.archcmd = arch_cmd
+import tla_convert as tla
+from tla_convert import shcall, shrun
 
 
 def pyblio_archive_map(archives, base_location, source=True):
@@ -107,31 +65,63 @@ def set_default_archive(archive_name):
            % (arch_cmd, archive_name))
 
 
-def import_projects(projects):
-    for arch_proj, hg_proj in projects:
-        shutil.rmtree(hg_proj, ignore_errors=True)
-        tla.tla_to_git(arch_proj, hg_proj)
+def import_projects(projects, vcs_type='git'):
+    for arch_proj, repo_path in projects:
+        shutil.rmtree(repo_path, ignore_errors=True)
+        tla.convert_version(arch_proj, repo_path, vcs_type)
+
+
+# conversion parameters
+arch_cmd = 'tla'
+archives = ('2007', '2006', '2005', 'public')
+# from tla abrowse ftp://arch.pybliographer.org/archives/2007
+'''
+gobry@pybliographer.org--2007
+  pyblio
+    pyblio--devel
+      pyblio--devel--1.3
+        base-0 .. patch-23
+
+    pyblio--legacy
+      pyblio--legacy--1.3
+        base-0 .. version-0
+
+    pyblio--stable
+      pyblio--stable--1.2
+        base-0 .. patch-30
+
+  pyblio-core
+    pyblio-core--devel
+      pyblio-core--devel--1.3
+        base-0 .. patch-29
+
+  python-bibtex
+    python-bibtex--devel
+      python-bibtex--devel--1.3
+        base-0
+
+    python-bibtex--stable
+      python-bibtex--stable--1.2
+        base-0
+'''
+projects = (
+    ('pyblio--stable--1.2', 'pyblio-1.2'),
+    ('python-bibtex--stable--1.2', 'python-bibtex-1.2'),
+    )
+
+# Set our own archive command to module global
+tla.archcmd = arch_cmd
 
 
 if __name__ == '__main__':
-    # don't forget to set an hg username
+    # don't forget to set an hg or git username
     clear_archives()
     shcall('tla my-id "Matthew Brett <matthew.brett@gmail.com>"')
-    #archive_dir = os.path.abspath('archives')
-    #amap = pyblio_archive_map(archives,
-    #                          'ftp://arch.pybliographer.org/archives',
-    #                          source=False)
-    # currently working with fuse mount of ftp
+    # currently working with local copy of archives
     amap = pyblio_archive_map(archives,
                               '/Users/mb312/data/archives',
                               source=False)
     register_archives(amap)
-    #mirror_archives(amap, archive_dir)
-    #amap = pyblio_archive_map(archives,
-    #                          archive_dir,
-    #                          source=False)
-    #register_archives(amap, remove=True)
     set_default_archive(amap['2007'][0])
-    import_projects(projects)
-    #revs = tla.get_revisions('pyblio--devel--1.3'))
+    import_projects(projects, 'git')
     

@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 """
-   Convert a repository to mercurial (hg).
+   Convert a repository to mercurial (hg) or git
 
+   David Mentre version found at:
+   
    http://www.linux-france.org/~dmentre/misc/tla-to-hg-hist.py
    
-   This runs with baz 1.1.1  and also with tla 1.3-1 - if you do changes,
+   This runs with baz 1.1.1 and also with tla 1.3.5 - if you do changes,
    maybe either try to avoid stuff requiring latest versions (it means
    much trouble for people trying to convert).
 
@@ -18,6 +20,7 @@
    @copyright: 2005 Ollivier Robert
    @copyright: 2005 Thomas Waldmann (rewrite, optimize)
    @copyright: 2006 David MENTRE (full history, tested with tla 1.3)
+   @copyright: 2010 Matthew Brett (added git conversion, refactored)
 """
 import os, sys, time
 import subprocess
@@ -78,8 +81,8 @@ class Repo(object):
         self.init_repo()
         self.commit_log(fullrev)
 
-    def import_branch(self, archive):
-        version_list = get_revisions(archive)
+    def import_branch_version(self, branch_version):
+        version_list = get_revisions(branch_version)
         self.make_initial_revision(version_list[0])
         for fullrev in version_list[1:]:
             self.import_revision(fullrev)
@@ -90,6 +93,7 @@ class HgRepo(Repo):
         hgi = open("%s/.hgignore" % self.repo_path, "w")
         hgi.write("""\
 .arch-ids/.*
+.arch-inventory
 \{arch\}/.*
 """)
         hgi.close()
@@ -106,6 +110,7 @@ class GitRepo(Repo):
         giti = open("%s/.gitignore" % self.repo_path, "w")
         giti.write("""\
 .arch-ids/
+.arch-inventory
 \{arch\}/
 """)
         giti.close()
@@ -113,8 +118,8 @@ class GitRepo(Repo):
 
     def do_commit(self, msg_fname, date, author):
         cmd = ("cd %s && "
-               "git add . && "
-               "git ls-files --deleted | xargs git rm && "
+               "git add . && " # git version of --addremove in hg
+               "git ls-files --deleted | xargs git rm && " 
                "GIT_AUTHOR_DATE='%s' " # note no &&
                "git commit --file=%s --author='%s'" % 
                (self.repo_path, date, msg_fname, author))
@@ -129,9 +134,9 @@ stderr: %s
 """  % (cmd, code, res, err))
 
     
-def get_revisions(archive):
-    """get revision list of archive"""
-    shcall("%s get %s tmp-archive" % (archcmd, archive))
+def get_revisions(branch_version):
+    """get revision list of branch_version"""
+    shcall("%s get %s tmp-archive" % (archcmd, branch_version))
     revlist = shrun("cd tmp-archive && %s ancestry-graph --reverse"
                     % archcmd)
     shutil.rmtree('tmp-archive', ignore_errors=True)
@@ -171,25 +176,41 @@ def read_summary(fullrev):
     return summary, author, date
 
 
-def tla_to_hg(archive, mercurial_dir):
-    HgRepo(mercurial_dir).import_branch(archive)
+def convert_version(branch_version, repo_path, vcs_type='hg'):
+    repo = STR2REPO[vcs_type](repo_path)
+    repo.import_branch_version(branch_version)
 
-
-def tla_to_git(archive, git_dir):
-    GitRepo(git_dir).import_branch(archive)
+    
+STR2REPO = {'hg': HgRepo, 'git': GitRepo}
 
 
 if __name__ == '__main__':
     try:
-        cmd, archive, mercurial_dir = sys.argv[:3]
+        cmd, branch_version, repo_path = sys.argv[:3]
     except IndexError:
         sys.stdout.write("""\
-    Usage: tla2hg_hist.py archive target_dir
+    Usage: %s branch-version repo-path [vcs-type]
 
-    archive: the tla/baz archive you are converting from
-    target_dir: where to put conversion results in hg format, must be some
-                directory in the current directory, like "outputdir".
-    """)
-    tla_to_hg(archive, mercurial_dir)
+    branch-version: the tla/baz branch version you are converting from
+
+    repo-path: where to put conversion results in repository-specific
+               format
+
+    vcs-type: one of 'hg' or 'git' (default is 'hg')
+
+    e.g. ``%s pyblio--stable--1.2 pyblio-1.2 git``
+
+    Note that you will need to register all archives with relevant
+    history beforehand, using 'tla' or 'baz' ``register-archive``, and
+    the archive with the relevant branch-version will need to be your
+    default archive (``tla|baz my-default-archive <archive-name>``). 
+    You will need a defined user in your environment for the version
+    control system you use (e.g. via ``.hgrc`` or ``.gitconfig``).
+    """) % (cmd, cmd)
+    try:
+        vcs_type = sys.argv[3]
+    except IndexError:
+        vcs_type = 'hg'
+    convert_version(branch_version, repo_path, vcs_type)
     
 
