@@ -44,7 +44,8 @@ gobry@pybliographer.org--2007
         base-0
 '''
 projects = (
-    ('pyblio--devel--1.3', 'pyblio-devel-1.3'),
+    ('pyblio--stable--1.2', 'pyblio-1.2'),
+    ('python-bibtex--stable--1.2', 'python-bibtex-1.2'),
     )
 
 # Set our own archive command to module global
@@ -109,7 +110,7 @@ def set_default_archive(archive_name):
 def import_projects(projects):
     for arch_proj, hg_proj in projects:
         shutil.rmtree(hg_proj, ignore_errors=True)
-        tla.tla_to_hg(arch_proj, hg_proj)
+        tla.tla_to_git(arch_proj, hg_proj)
 
 
 if __name__ == '__main__':
@@ -122,7 +123,7 @@ if __name__ == '__main__':
     #                          source=False)
     # currently working with fuse mount of ftp
     amap = pyblio_archive_map(archives,
-                              '/home/matthew/dev_trees/pybliographer/archives',
+                              '/Users/mb312/data/archives',
                               source=False)
     register_archives(amap)
     #mirror_archives(amap, archive_dir)
